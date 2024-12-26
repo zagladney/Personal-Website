@@ -18,6 +18,33 @@
         </nav>
     </header>
     <main>
+        <!-- Add a Hero Section with an image -->
+        <section id="hero" class="hero-section">
+            <img src="'headshot.jpg" alt="Zakiriya Gladney" class="hero-image">
+            <div class="hero-text" data-aos="fade-up">
+                <p>Welcome to my digital space! Explore my work across journalism, photography, and tech projects.</p>
+            </div>
+        </section>
+        
+        <!-- Summarized sections with quick navigation -->
+        <section id="quick-links" class="quick-links">
+            <div class="card" data-aos="fade-right">
+                <h3>Journalism</h3>
+                <p>Read my latest opinion pieces and articles.</p>
+                <a href="#journalism">Explore Journalism</a>
+            </div>
+            <div class="card" data-aos="fade-up">
+                <h3>Photography</h3>
+                <p>View my portfolio of commercial and artistic photography.</p>
+                <a href="#photography">See Photography</a>
+            </div>
+            <div class="card" data-aos="fade-left">
+                <h3>Tech Projects</h3>
+                <p>Discover my personal projects in technology and innovation.</p>
+                <a href="#tech-projects">Explore Projects</a>
+            </div>
+        </section>
+        
         <section id="about">
             <h2>About Me</h2>
             <p>Welcome! I'm Zakiriya, a journalist, photographer, and technologist. Here's my story...</p>
@@ -38,6 +65,11 @@
     <footer>
         <p>© 2024 Zakiriya Gladney</p>
     </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script>
+        // Initialize AOS for scroll animations
+        AOS.init();
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
