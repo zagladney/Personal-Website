@@ -16,9 +16,9 @@ const observer = new IntersectionObserver(entries => {
     });
 });
 
-document.querySelectorAll('.card, section').forEach(section => {
-    section.classList.add('hidden'); // Initially hidden
-    observer.observe(section);
+document.querySelectorAll('.card').forEach(card => {
+    card.classList.add('hidden'); // Initially hidden
+    observer.observe(card);
 });
 
 .hidden {

@@ -4,72 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zakiriya Gladney</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Header -->
     <header>
-        <h1>Zakiriya Gladney</h1>
-        <nav>
-            <a href="#about">About Me</a>
-            <a href="#journalism">Journalism</a>
-            <a href="#photography">Photography</a>
-            <a href="#tech-projects">Tech Projects</a>
-            <a href="#contact">Contact</a>
-        </nav>
+        <div class="header-container">
+            <h1 class="logo">Zakiriya Gladney</h1>
+            <nav>
+                <a href="index.html">About</a>
+                <a href="cv.html">CV</a>
+                <a href="projects.html">Technical Projects</a>
+                <a href="artwork.html">Artwork</a>
+                <a href="writing.html">Writing</a>
+                <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                    <img src="linkedin-icon.png" alt="LinkedIn" />
+                </a>
+            </nav>
+        </div>
     </header>
-    <main>
-        <!-- Add a Hero Section with an image -->
-        <section id="hero" class="hero-section">
-            <img src="'headshot.jpg" alt="Zakiriya Gladney" class="hero-image">
-            <div class="hero-text" data-aos="fade-up">
-                <p>Welcome to my digital space! Explore my work across journalism, photography, and tech projects.</p>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="card">
+            <!-- Image Section -->
+            <div class="card-left">
+                <img src="headshot.JPG" alt="Zakiriya Gladney">
             </div>
-        </section>
-        
-        <!-- Summarized sections with quick navigation -->
-        <section id="quick-links" class="quick-links">
-            <div class="card" data-aos="fade-right">
-                <h3>Journalism</h3>
-                <p>Read my latest opinion pieces and articles.</p>
-                <a href="#journalism">Explore Journalism</a>
+            <!-- Text Section -->
+            <div class="card-right">
+                <h2>Hello,</h2>
+                <p>
+                    I'm <span class="highlight">Zakiriya Gladney</span>, a sophomore at Harvard College studying Statistics
+                    and Social Studies. I'm an opinion writer, photographer, and data scientist
+                    based out of <span class="highlight">Tucson, AZ</span> and <span class="highlight">Cambridge, MA</span>. 
+                    I love exploring the intersections of creativity and technology.
+                </p>
             </div>
-            <div class="card" data-aos="fade-up">
-                <h3>Photography</h3>
-                <p>View my portfolio of commercial and artistic photography.</p>
-                <a href="#photography">See Photography</a>
-            </div>
-            <div class="card" data-aos="fade-left">
-                <h3>Tech Projects</h3>
-                <p>Discover my personal projects in technology and innovation.</p>
-                <a href="#tech-projects">Explore Projects</a>
-            </div>
-        </section>
-        
-        <section id="about">
-            <h2>About Me</h2>
-            <p>Welcome! I'm Zakiriya, a journalist, photographer, and technologist. Here's my story...</p>
-        </section>
-        <section id="journalism">
-            <h2>Journalism</h2>
-            <p>Explore my opinion pieces and articles.</p>
-        </section>
-        <section id="photography">
-            <h2>Photography</h2>
-            <p>Check out my commercial and artistic work.</p>
-        </section>
-        <section id="tech-projects">
-            <h2>Tech Projects</h2>
-            <p>Discover my technical projects and innovations.</p>
-        </section>
-    </main>
+        </div>  
+    </section>
+    <!-- Footer -->
     <footer>
         <p>© 2024 Zakiriya Gladney</p>
     </footer>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
-    <script>
-        // Initialize AOS for scroll animations
-        AOS.init();
-    </script>
-    <script src="script.js"></script>
 </body>
 </html>
