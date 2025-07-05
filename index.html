@@ -49,7 +49,9 @@
                 <span></span>
             </div>
         </div>
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
         <div class="mobile-nav" id="mobile-nav">
+            <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&times;</button>
             <a href="/">About</a>
             <a href="/cv">CV</a>
             <a href="/projects">Technical Projects</a>
@@ -84,19 +86,26 @@ I'm Zakiriya Gladney, a student in statistics and social studies at Harvard Univ
     // Hamburger menu toggle
     const hamburger = document.getElementById('hamburger-menu');
     const mobileNav = document.getElementById('mobile-nav');
-    hamburger.addEventListener('click', () => {
-        mobileNav.classList.toggle('open');
-    });
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    function openMobileNav() {
+        mobileNav.classList.add('open');
+        mobileNavOverlay.classList.add('open');
+    }
+    function closeMobileNav() {
+        mobileNav.classList.remove('open');
+        mobileNavOverlay.classList.remove('open');
+    }
+    hamburger.addEventListener('click', openMobileNav);
     hamburger.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-            mobileNav.classList.toggle('open');
+            openMobileNav();
         }
     });
-    // Close mobile nav when clicking a link
+    mobileNavClose.addEventListener('click', closeMobileNav);
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
     mobileNav.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            mobileNav.classList.remove('open');
-        });
+        link.addEventListener('click', closeMobileNav);
     });
     </script>
 </body>
