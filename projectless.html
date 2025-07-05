@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projectless - Zakiriya Gladney</title>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <h1 class="logo">Zakiriya Gladney</h1>
+            <nav>
+                <a href="index.html">About</a>
+                <a href="cv.html">CV</a>
+                <a href="projects.html">Technical Projects</a>
+                <a href="artwork.html">Artwork</a>
+                <a href="writing.html">Writing</a>
+                <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                    <img src="linkedin-icon.png" alt="LinkedIn" />
+                </a>
+                <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link" style="margin-left: 0.5rem;">
+                    <img src="instagram-icon.png" alt="Instagram" />
+                </a>
+            </nav>
+        </div>
+    </header>
+    <main class="crust-main">
+        <h1 class="crust-title">Projectless</h1>
+        <div class="coming-soon">coming soon</div>
+        <section class="photo-slider-section">
+            <div class="photo-slider">
+                <button class="slider-arrow left" id="slider-prev" aria-label="Previous photo">&#60;</button>
+                <div class="slider-image-wrapper">
+                    <img class="slider-image fade" id="slider-image" src="" alt="Projectless Photo 1" style="display:none;">
+                </div>
+                <button class="slider-arrow right" id="slider-next" aria-label="Next photo">&#62;</button>
+            </div>
+        </section>
+        <div class="crust-about">
+            <span class="crust-about-label" id="about-toggle">about</span>
+            <p class="crust-about-text" id="about-body"></p>
+        </div>
+    </main>
+    <script>
+    // Minimal carousel logic for this project page
+    const sliderImages = [
+        // Add image paths here, e.g. 'photo storage/projectless/01.jpg'
+    ];
+    let currentIndex = 0;
+    const sliderImage = document.getElementById('slider-image');
+    const prevBtn = document.getElementById('slider-prev');
+    const nextBtn = document.getElementById('slider-next');
+    function showImage(index) {
+        sliderImage.classList.remove('fade-in');
+        setTimeout(() => {
+            sliderImage.src = sliderImages[index];
+            sliderImage.alt = `Projectless Photo ${index + 1}`;
+            sliderImage.classList.add('fade-in');
+            sliderImage.style.display = '';
+        }, 100);
+    }
+    prevBtn.addEventListener('click', () => {
+        if (sliderImages.length === 0) return;
+        currentIndex = (currentIndex - 1 + sliderImages.length) % sliderImages.length;
+        showImage(currentIndex);
+    });
+    nextBtn.addEventListener('click', () => {
+        if (sliderImages.length === 0) return;
+        currentIndex = (currentIndex + 1) % sliderImages.length;
+        showImage(currentIndex);
+    });
+    sliderImage.addEventListener('contextmenu', e => e.preventDefault());
+    sliderImage.addEventListener('dragstart', e => e.preventDefault());
+    sliderImage.addEventListener('mousedown', e => { if (e.button === 2) e.preventDefault(); });
+    window.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') prevBtn.click();
+        if (e.key === 'ArrowRight') nextBtn.click();
+    });
+    sliderImage.classList.add('fade-in');
+    // About toggle logic
+    const aboutToggle = document.getElementById('about-toggle');
+    const aboutBody = document.getElementById('about-body');
+    aboutBody.style.maxHeight = '0';
+    aboutBody.style.overflow = 'hidden';
+    aboutBody.style.opacity = '0';
+    aboutBody.style.transition = 'max-height 0.5s cubic-bezier(.4,0,.2,1), opacity 0.4s';
+    let aboutOpen = false;
+    aboutToggle.style.cursor = 'pointer';
+    aboutToggle.title = 'Show about';
+    aboutToggle.addEventListener('click', () => {
+      aboutOpen = !aboutOpen;
+      if (aboutOpen) {
+        aboutBody.style.maxHeight = '1000px';
+        aboutBody.style.opacity = '1';
+        aboutToggle.title = 'Hide about';
+      } else {
+        aboutBody.style.maxHeight = '0';
+        aboutBody.style.opacity = '0';
+        aboutToggle.title = 'Show about';
+      }
+    });
+    </script>
+</body>
+</html> 
