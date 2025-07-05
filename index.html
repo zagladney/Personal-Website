@@ -43,6 +43,24 @@
                     <img src="instagram-icon.png" alt="Instagram" />
                 </a>
             </nav>
+            <div class="hamburger" id="hamburger-menu" aria-label="Open menu" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="mobile-nav" id="mobile-nav">
+            <a href="/">About</a>
+            <a href="/cv">CV</a>
+            <a href="/projects">Technical Projects</a>
+            <a href="/artwork">Artwork</a>
+            <a href="/writing">Writing</a>
+            <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                <img src="linkedin-icon.png" alt="LinkedIn" />
+            </a>
+            <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link" style="margin-left: 0.5rem;">
+                <img src="instagram-icon.png" alt="Instagram" />
+            </a>
         </div>
     </header>
     <!-- Hero Section -->
@@ -62,5 +80,24 @@ I'm Zakiriya Gladney, a student in statistics and social studies at Harvard Univ
         </div>
     </section>
     <script src="script.js"></script>
+    <script>
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('hamburger-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    hamburger.addEventListener('click', () => {
+        mobileNav.classList.toggle('open');
+    });
+    hamburger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            mobileNav.classList.toggle('open');
+        }
+    });
+    // Close mobile nav when clicking a link
+    mobileNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileNav.classList.remove('open');
+        });
+    });
+    </script>
 </body>
 </html>

@@ -15,7 +15,7 @@ document.querySelectorAll('.card').forEach(card => {
 const sliderImages = [
   'photo storage/latest edit zak gas station.jpg',
   'photo storage/000155730031 (1) (1).jpg',
-  'photo storage/_MG_5632.jpg',
+  'photo storage/img_5632.jpg',
   'photo storage/img535-positive.jpg',
   'photo storage/000653920022.jpg'
 ];
