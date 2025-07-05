@@ -1,0 +1,5 @@
+# Jekyll configuration for pretty URLs
+permalink: pretty
+relative_links:
+  enabled: true
+  collections: true 
