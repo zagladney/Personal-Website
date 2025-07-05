@@ -55,12 +55,24 @@
     const nextBtn = document.getElementById('slider-next');
     function showImage(index) {
         sliderImage.classList.remove('fade-in');
-        setTimeout(() => {
-            sliderImage.src = sliderImages[index];
+        const img = new Image();
+        img.src = sliderImages[index];
+        img.onload = () => {
+            sliderImage.src = img.src;
             sliderImage.alt = `Commercial Photo ${index + 1}`;
             sliderImage.classList.add('fade-in');
             sliderImage.style.display = '';
-        }, 100);
+        };
+        img.onerror = () => {
+            const nextIndex = (index + 1) % sliderImages.length;
+            if (nextIndex !== index) {
+                showImage(nextIndex);
+                currentIndex = nextIndex;
+            } else {
+                sliderImage.src = '';
+                sliderImage.alt = 'Image not available';
+            }
+        };
     }
     prevBtn.addEventListener('click', () => {
         if (sliderImages.length === 0) return;
