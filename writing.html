@@ -43,6 +43,26 @@
                     <img src="instagram-icon.png" alt="Instagram" />
                 </a>
             </nav>
+            <div class="hamburger" id="hamburger-menu" aria-label="Open menu" tabindex="0">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+        <div class="mobile-nav" id="mobile-nav">
+            <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&times;</button>
+            <a href="/">About</a>
+            <a href="/cv">CV</a>
+            <a href="/projects">Technical Projects</a>
+            <a href="/artwork">Artwork</a>
+            <a href="/writing">Writing</a>
+            <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                <img src="linkedin-icon.png" alt="LinkedIn" />
+            </a>
+            <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link" style="margin-left: 0.5rem;">
+                <img src="instagram-icon.png" alt="Instagram" />
+            </a>
         </div>
     </header>
 
@@ -72,14 +92,34 @@
                     </article>
                 </div>
             </section>
-
-            <section class="writing-category">
-                <h2>Academic Writing</h2>
-                <div class="papers-list">
-                    <!-- Add academic writing here if desired -->
-                </div>
-            </section>
         </div>
     </main>
+
+    <script>
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('hamburger-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    function openMobileNav() {
+        mobileNav.classList.add('open');
+        mobileNavOverlay.classList.add('open');
+    }
+    function closeMobileNav() {
+        mobileNav.classList.remove('open');
+        mobileNavOverlay.classList.remove('open');
+    }
+    hamburger.addEventListener('click', openMobileNav);
+    hamburger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            openMobileNav();
+        }
+    });
+    mobileNavClose.addEventListener('click', closeMobileNav);
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
+    mobileNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMobileNav);
+    });
+    </script>
 </body>
 </html> 
