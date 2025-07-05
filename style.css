@@ -945,17 +945,26 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.7rem;
+    gap: 1.2rem;
+    width: 100%;
 }
 .mobile-nav .social-link img {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: 8px;
     padding: 2px;
     background: #fff;
     border: 2px solid #fff;
     object-fit: cover;
-    margin: 0;
+    margin: 0 auto;
+    display: block;
+}
+.mobile-nav a.social-link {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 1.2rem 0;
 }
 
 /* Artwork page title styling */
