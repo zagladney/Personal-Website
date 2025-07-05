@@ -643,7 +643,7 @@ a:hover {
 }
 
 .fade-in {
-    animation: fadeIn 1.5s;
+    animation: fadeIn 2.5s;
 }
 
 @keyframes fadeIn {

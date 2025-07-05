@@ -27,11 +27,13 @@ const nextBtn = document.getElementById('slider-next');
 
 function showImage(index) {
   sliderImage.classList.remove('fade-in');
-  setTimeout(() => {
-    sliderImage.src = sliderImages[index];
+  const img = new Image();
+  img.src = sliderImages[index];
+  img.onload = () => {
+    sliderImage.src = img.src;
     sliderImage.alt = `Photo ${index + 1}`;
     sliderImage.classList.add('fade-in');
-  }, 100);
+  };
 }
 
 prevBtn.addEventListener('click', () => {
