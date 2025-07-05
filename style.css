@@ -804,8 +804,8 @@ a:hover {
     text-align: center;
     font-family: 'EB Garamond', serif;
     font-size: 1.5rem;
-    color: #01172F;
-    opacity: 0.35;
+    color: #e0e0e0;
+    opacity: 0.85;
     margin: 1.5rem 0 2.5rem 0;
     letter-spacing: 0.08em;
 }
@@ -949,15 +949,16 @@ html, body {
     width: 100%;
 }
 .mobile-nav .social-link img {
-    width: 40px;
-    height: 40px;
+    width: 40px !important;
+    height: 40px !important;
     border-radius: 8px;
-    padding: 2px;
+    padding: 0 !important;
     background: #fff;
     border: 2px solid #fff;
-    object-fit: cover;
-    margin: 0 auto;
+    object-fit: contain;
+    margin: 0 auto !important;
     display: block;
+    box-sizing: border-box;
 }
 .mobile-nav a.social-link {
     width: 100%;
