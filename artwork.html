@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artwork - Zakiriya Gladney</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <meta name="description" content="Artwork projects by Zakiriya Gladney: photography, visual art, and creative explorations.">
     <meta name="robots" content="index, follow">
@@ -28,41 +28,52 @@
 <body>
     <!-- Header -->
     <header>
-        <div class="header-container">
-            <h1 class="logo">Zakiriya Gladney</h1>
-            <nav>
-                <a href="/">About</a>
-                <a href="/cv">CV</a>
-                <a href="/projects">Technical Projects</a>
-                <a href="/artwork">Artwork</a>
-                <a href="/writing">Writing</a>
-                <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
-                    <img src="linkedin-icon.png" alt="LinkedIn" />
-                </a>
-                <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link" style="margin-left: 0.5rem;">
-                    <img src="instagram-icon.png" alt="Instagram" />
-                </a>
-            </nav>
-            <div class="hamburger" id="hamburger-menu" aria-label="Open menu" tabindex="0">
-                <span></span>
-                <span></span>
-                <span></span>
+        <div class="header-wrapper">
+            <div class="header-container">
+                <h1 class="logo"><a href="/">Zakiriya Gladney</a></h1>
+                <nav class="nav-links">
+                    <a href="/resume">Resume</a>
+                    <a href="/artwork">Artwork</a>
+                    <a href="/writing">Writing</a>
+                    <a href="/projects">Data</a>
+                </nav>
+                <div class="social-links-container">
+                    <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                        <img src="linkedin-icon.png" alt="LinkedIn" />
+                    </a>
+                    <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                        <img src="instagram-icon.png" alt="Instagram" />
+                    </a>
+                    <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                        <img src="crimson.png" alt="The Crimson" />
+                    </a>
+                </div>
+                <div class="hamburger" id="hamburger-menu" aria-label="Open menu" tabindex="0">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </div>
         </div>
         <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
         <div class="mobile-nav" id="mobile-nav">
             <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&times;</button>
-            <a href="/">About</a>
-            <a href="/cv">CV</a>
-            <a href="/projects">Technical Projects</a>
+            <a href="/">Home</a>
+            <a href="/resume">Resume</a>
             <a href="/artwork">Artwork</a>
             <a href="/writing">Writing</a>
-            <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
-                <img src="linkedin-icon.png" alt="LinkedIn" />
-            </a>
-            <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link" style="margin-left: 0.5rem;">
-                <img src="instagram-icon.png" alt="Instagram" />
-            </a>
+            <a href="/projects">Data</a>
+            <div class="social-links-container">
+                <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                    <img src="linkedin-icon.png" alt="LinkedIn" />
+                </a>
+                <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                    <img src="instagram-icon.png" alt="Instagram" />
+                </a>
+                <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                    <img src="crimson.png" alt="The Crimson" />
+                </a>
+            </div>
         </div>
     </header>
 
@@ -70,11 +81,12 @@
     <main class="content-section">
         <h1>Artwork</h1>
         <div class="artwork-project-list">
+            <a href="/tunisia" class="artwork-project-link">Tunisia</a>
             <a href="/crust" class="artwork-project-link">Crust</a>
-            <a href="/black-night" class="artwork-project-link">Black Night</a>
-            <a href="/projectless" class="artwork-project-link">Projectless</a>
-            <a href="/portraits" class="artwork-project-link">Portraits</a>
-            <a href="/commercial" class="artwork-project-link">Commercial</a>
+            <a href="/black-hermeneutics" class="artwork-project-link">Black Hermeneutics</a>
+            <a href="#" class="artwork-project-link artwork-project-link-doxxology" id="doxxology-tease" aria-label="Upcoming project, redacted" onclick="return false;">
+                <span class="doxxology-label">DOXXOLOGY</span>
+            </a>
         </div>
     </main>
 
@@ -103,6 +115,64 @@
     mobileNav.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', closeMobileNav);
     });
+
+    // DOXXOLOGY teaser hover effects
+    const doxxologyCard = document.getElementById('doxxology-tease');
+    const logoElement = document.querySelector('.logo');
+
+    if (doxxologyCard && logoElement) {
+        const neonColors = [
+            '#39ff14', // neon green
+            '#ff2eff', // neon pink
+            '#00f6ff', // cyan
+            '#ffe700', // neon yellow
+            '#ff6b00'  // neon orange
+        ];
+
+        const bbox = document.createElement('div');
+        bbox.id = 'ml-bbox';
+
+        const bboxLabel = document.createElement('span');
+        bboxLabel.className = 'ml-bbox-label';
+        bbox.appendChild(bboxLabel);
+
+        document.body.appendChild(bbox);
+
+        function positionBBox() {
+            const rect = logoElement.getBoundingClientRect();
+            const padding = 6;
+            bbox.style.top = `${window.scrollY + rect.top - padding}px`;
+            bbox.style.left = `${window.scrollX + rect.left - padding}px`;
+            bbox.style.width = `${rect.width + padding * 2}px`;
+            bbox.style.height = `${rect.height + padding * 2}px`;
+        }
+
+        function showBBox() {
+            const color = neonColors[Math.floor(Math.random() * neonColors.length)];
+            const score = Math.random().toFixed(2); // 0.00 - 0.99
+            bbox.style.setProperty('--ml-bbox-color', color);
+            bboxLabel.textContent = `Zakiriya Gladney • ${score}`;
+            positionBBox();
+            bbox.classList.add('visible');
+        }
+
+        function hideBBox() {
+            bbox.classList.remove('visible');
+        }
+
+        doxxologyCard.addEventListener('mouseenter', showBBox);
+        doxxologyCard.addEventListener('mouseleave', hideBBox);
+        window.addEventListener('scroll', () => {
+            if (bbox.classList.contains('visible')) {
+                positionBBox();
+            }
+        });
+        window.addEventListener('resize', () => {
+            if (bbox.classList.contains('visible')) {
+                positionBBox();
+            }
+        });
+    }
     </script>
 </body>
 </html> 

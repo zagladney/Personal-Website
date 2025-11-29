@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Hermeneutics - Zakiriya Gladney</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-wrapper">
+            <div class="header-container">
+                <h1 class="logo"><a href="/">Zakiriya Gladney</a></h1>
+                <nav class="nav-links">
+                    <a href="/resume">Resume</a>
+                    <a href="/artwork">Artwork</a>
+                    <a href="/writing">Writing</a>
+                    <a href="/projects">Data</a>
+                </nav>
+                <div class="social-links-container">
+                    <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                        <img src="linkedin-icon.png" alt="LinkedIn" />
+                    </a>
+                    <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                        <img src="instagram-icon.png" alt="Instagram" />
+                    </a>
+                    <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                        <img src="crimson.png" alt="The Crimson" />
+                    </a>
+                </div>
+                <div class="hamburger" id="hamburger-menu" aria-label="Open menu" tabindex="0">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+        <div class="mobile-nav" id="mobile-nav">
+            <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&times;</button>
+            <a href="/">Home</a>
+            <a href="/resume">Resume</a>
+            <a href="/artwork">Artwork</a>
+            <a href="/writing">Writing</a>
+            <a href="/projects">Data</a>
+            <div class="social-links-container">
+                <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                    <img src="linkedin-icon.png" alt="LinkedIn" />
+                </a>
+                <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                    <img src="instagram-icon.png" alt="Instagram" />
+                </a>
+                <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                    <img src="crimson.png" alt="The Crimson" />
+                </a>
+            </div>
+        </div>
+    </header>
+    <main class="tunisia-main">
+        <h1 class="tunisia-title">Black Hermeneutics</h1>
+        <div class="tunisia-container" id="black-night-container">
+            <!-- Gallery items will be inserted here by JavaScript -->
+        </div>
+        <div class="scroll-indicator" id="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </main>
+    
+    <!-- Carousel Modal -->
+    <div class="carousel-modal" id="carousel-modal">
+        <button class="carousel-close" id="carousel-close" aria-label="Close carousel">&times;</button>
+        <button class="carousel-share" id="carousel-share" aria-label="Share image" title="Copy link to this image">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
+            </svg>
+        </button>
+        <button class="carousel-arrow carousel-prev" id="carousel-prev" aria-label="Previous image">&#60;</button>
+        <button class="carousel-arrow carousel-next" id="carousel-next" aria-label="Next image">&#62;</button>
+        <div class="carousel-image-container">
+            <img class="carousel-image" id="carousel-image" src="" alt="">
+        </div>
+        <div class="carousel-counter" id="carousel-counter">
+            <span id="current-index">1</span> / <span id="total-count">1</span>
+        </div>
+        <div class="share-feedback" id="share-feedback">Link copied!</div>
+    </div>
+    <div class="carousel-overlay" id="carousel-overlay"></div>
+    
+    <script src="black-night-data.js"></script>
+    <script src="black-night-script.js"></script>
+    <script>
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('hamburger-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    function openMobileNav() {
+        mobileNav.classList.add('open');
+        mobileNavOverlay.classList.add('open');
+    }
+    function closeMobileNav() {
+        mobileNav.classList.remove('open');
+        mobileNavOverlay.classList.remove('open');
+    }
+    hamburger.addEventListener('click', openMobileNav);
+    hamburger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            openMobileNav();
+        }
+    });
+    mobileNavClose.addEventListener('click', closeMobileNav);
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
+    mobileNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMobileNav);
+    });
+    </script>
+</body>
+</html>
