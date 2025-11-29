@@ -848,15 +848,18 @@ a:hover {
     display: inline-block;
     text-transform: uppercase;
     letter-spacing: 0.35em;
-    color: rgba(255, 255, 255, 0.22);
-    text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+    color: rgba(255, 255, 255, 0.04);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 1);
 }
 
 .doxxology-label::before {
     content: '';
     position: absolute;
-    inset: 0.25em 0.2em;
-    background: rgba(0, 0, 0, 0.96);
+    inset: 0.1em 0;
+    background-image: url("redacted marker.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
     border-radius: 3px;
     z-index: -1;
 }
