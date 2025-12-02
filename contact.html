@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Zakiriya Gladney</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Contact Zakiriya Gladney - Get in touch via email or social media.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://zgladney.com/contact">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Contact - Zakiriya Gladney">
+    <meta property="og:description" content="Contact Zakiriya Gladney - Get in touch via email or social media.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://zgladney.com/contact">
+    <meta property="og:image" content="https://zgladney.com/headshot.JPG">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Contact - Zakiriya Gladney">
+    <meta name="twitter:description" content="Contact Zakiriya Gladney - Get in touch via email or social media.">
+    <meta name="twitter:image" content="https://zgladney.com/headshot.JPG">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#ffffff">
+    <!-- EmailJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-wrapper">
+            <div class="header-container">
+                <h1 class="logo"><a href="/">Zakiriya Gladney</a></h1>
+                <nav class="nav-links">
+                    <a href="/resume">Resume</a>
+                    <a href="/artwork">Artwork</a>
+                    <a href="/writing">Writing</a>
+                    <a href="/projects">Data</a>
+                    <a href="/contact">Contact</a>
+                </nav>
+                <div class="social-links-container">
+                    <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                        <img src="linkedin-icon.png" alt="LinkedIn" />
+                    </a>
+                    <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                        <img src="instagram-icon.png" alt="Instagram" />
+                    </a>
+                    <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                        <img src="crimson.png" alt="The Crimson" />
+                    </a>
+                </div>
+                <div class="hamburger" id="hamburger-menu" aria-label="Open menu" tabindex="0">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+        <div class="mobile-nav" id="mobile-nav">
+            <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&times;</button>
+            <a href="/">Home</a>
+            <a href="/resume">Resume</a>
+            <a href="/artwork">Artwork</a>
+            <a href="/writing">Writing</a>
+            <a href="/projects">Data</a>
+            <a href="/contact">Contact</a>
+            <div class="social-links-container">
+                <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                    <img src="linkedin-icon.png" alt="LinkedIn" />
+                </a>
+                <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                    <img src="instagram-icon.png" alt="Instagram" />
+                </a>
+                <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                    <img src="crimson.png" alt="The Crimson" />
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content-section">
+        <h1>Contact</h1>
+        <div class="contact-content">
+            <p class="contact-intro">
+                The best way to reach me is via email. Please use the form below to send me a message.
+            </p>
+            
+            <form id="contact-form" class="contact-form">
+                <div class="form-group form-group-row">
+                    <div class="form-group-half">
+                        <label for="first_name">First Name</label>
+                        <input type="text" id="first_name" name="first_name" required>
+                    </div>
+                    <div class="form-group-half">
+                        <label for="last_name">Last Name</label>
+                        <input type="text" id="last_name" name="last_name" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="from_email">Email</label>
+                    <input type="email" id="from_email" name="from_email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="6" required></textarea>
+                </div>
+                
+                <button type="submit" class="contact-submit">Send Message</button>
+                <div id="form-feedback" class="form-feedback"></div>
+            </form>
+            
+            <div class="contact-social">
+                <h2>Connect</h2>
+                <div class="contact-social-links">
+                    <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="contact-social-link">
+                        <img src="linkedin-icon.png" alt="LinkedIn" />
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://instagram.com/zakkk.u" target="_blank" class="contact-social-link">
+                        <img src="instagram-icon.png" alt="Instagram" />
+                        <span>Instagram</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="contact-crimson">
+                <p>For all Crimson-related inquiries, please email me at <a href="mailto:zakiriya.gladney@thecrimson.com">zakiriya.gladney@thecrimson.com</a>.</p>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <p><a href="/contact">Contact</a></p>
+        </div>
+    </footer>
+    
+    <script>
+    // Initialize EmailJS when the page loads
+    (function() {
+        emailjs.init("tR4dcZy-7AaeiwlR2");
+    })();
+    
+    // Contact form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('contact-form');
+        if (!form) return;
+        
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const feedback = document.getElementById('form-feedback');
+            const submitButton = form.querySelector('.contact-submit');
+            
+            // Validate form
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            // Disable submit button
+            submitButton.disabled = true;
+            submitButton.textContent = 'Sending...';
+            feedback.textContent = '';
+            feedback.className = 'form-feedback';
+            
+            // Ensure EmailJS is initialized
+            if (typeof emailjs === 'undefined') {
+                feedback.textContent = 'Email service not loaded. Please refresh the page.';
+                feedback.className = 'form-feedback error';
+                submitButton.disabled = false;
+                submitButton.textContent = 'Send Message';
+                return;
+            }
+            
+            // Combine first name and last name
+            const firstName = document.getElementById('first_name').value.trim();
+            const lastName = document.getElementById('last_name').value.trim();
+            const fullName = firstName + (firstName && lastName ? ' ' : '') + lastName;
+            
+            // Prepare email data with correct field names
+            const emailData = {
+                name: fullName,
+                email: document.getElementById('from_email').value.trim(),
+                title: document.getElementById('subject').value.trim(),
+                message: document.getElementById('message').value.trim()
+            };
+            
+            // Send email via EmailJS
+            emailjs.send('service_q836wfp', 'template_ugnnj5m', emailData)
+                .then(function(response) {
+                    feedback.textContent = 'Message sent successfully!';
+                    feedback.className = 'form-feedback success';
+                    form.reset();
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
+                }, function(error) {
+                    console.error('EmailJS error:', error);
+                    let errorMessage = 'Failed to send message. Please try again or email directly.';
+                    if (error.text) {
+                        errorMessage += ' Error: ' + error.text;
+                    }
+                    feedback.textContent = errorMessage;
+                    feedback.className = 'form-feedback error';
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Send Message';
+                });
+        });
+    });
+    
+    // Hamburger menu toggle
+    const hamburger = document.getElementById('hamburger-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    function openMobileNav() {
+        mobileNav.classList.add('open');
+        mobileNavOverlay.classList.add('open');
+    }
+    function closeMobileNav() {
+        mobileNav.classList.remove('open');
+        mobileNavOverlay.classList.remove('open');
+    }
+    hamburger.addEventListener('click', openMobileNav);
+    hamburger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            openMobileNav();
+        }
+    });
+    mobileNavClose.addEventListener('click', closeMobileNav);
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
+    mobileNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMobileNav);
+    });
+    </script>
+</body>
+</html>
+
