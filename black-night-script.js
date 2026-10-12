@@ -25,7 +25,7 @@ function initBlackNightGallery() {
         galleryItem.dataset.index = index;
         
         const img = document.createElement('img');
-        img.src = image.src.replace(/-full\.jpg$/i, '-thumb.jpg');
+        img.src = image.src;
         img.alt = image.alt || `Black Hermeneutics photo ${index + 1}`;
         img.loading = 'lazy';
         
