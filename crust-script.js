@@ -25,7 +25,7 @@ function initCrustGallery() {
         galleryItem.dataset.index = index;
         
         const img = document.createElement('img');
-        img.src = image.src;
+        img.src = image.src.replace(/-full\.jpg$/i, '-thumb.jpg');
         img.alt = image.alt || `Crust photo ${index + 1}`;
         img.loading = 'lazy';
         
