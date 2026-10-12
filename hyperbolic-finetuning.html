@@ -262,17 +262,6 @@
         <p class="affil"><sup>1</sup>Harvard University, Cambridge, MA, USA</p>
         <p class="affil"><sup>2</sup>California Institute of Technology, Pasadena, CA, USA</p>
 
-        <div class="actions">
-            <a class="btn" href="hyperbolic-finetuning.pdf">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>
-                Download PDF (submitted version)
-            </a>
-        </div>
-
-        <div class="note">
-            <p><b>Correction, October 2026.</b> The submitted report attributes published HypLoRA&rsquo;s small gradients to a numerical clamp in the hyperbolic mapping. The code I ran has no such clamp, so this web version marks the cause as not yet identified, in the Abstract, Introduction, and Discussion. All measurements and results are unchanged.</p>
-        </div>
-
         <div class="abstract">
             <span class="label">Abstract</span>
             <p>After alignment training, large language models (LLMs) give consistent, human-like answers when asked to rate their own personality, but those self-reports do not predict how the models behave. Self-CTRL, a recent training method, tries to close this gap by rewarding self-reports that match behavior. I asked whether the geometry of the space in which a model is fine-tuned limits how well this can work. Personality inventories such as the BFI-2 are hierarchical, and hierarchies fit naturally into hyperbolic space but are distorted in ordinary Euclidean space. I fine-tuned OLMo-7B-Instruct with Self-CTRL under three conditions, with three random seeds each: standard Euclidean LoRA; HypLoRA, a hyperbolic version of LoRA; and HypLoRA with its update size matched to LoRA&rsquo;s.</p>
