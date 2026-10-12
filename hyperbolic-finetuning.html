@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Can Hyperbolic Fine-Tuning Close the Gap Between What LLMs Say and Do? - Zakiriya Gladney</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Research report by Zakiriya Gladney testing whether hyperbolic low-rank adaptation (HypLoRA) helps a language model's self-reports match its behavior under Self-CTRL training.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://zgladney.com/hyperbolic-finetuning">
+    <!-- Open Graph -->
+    <meta property="og:title" content="Can Hyperbolic Fine-Tuning Close the Gap Between What LLMs Say and Do?">
+    <meta property="og:description" content="Research report by Zakiriya Gladney testing whether hyperbolic low-rank adaptation (HypLoRA) helps a language model's self-reports match its behavior under Self-CTRL training.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://zgladney.com/hyperbolic-finetuning">
+    <meta property="og:image" content="https://zgladney.com/headshot.JPG">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Can Hyperbolic Fine-Tuning Close the Gap Between What LLMs Say and Do?">
+    <meta name="twitter:description" content="Research report by Zakiriya Gladney testing whether hyperbolic low-rank adaptation (HypLoRA) helps a language model's self-reports match its behavior under Self-CTRL training.">
+    <meta name="twitter:image" content="https://zgladney.com/headshot.JPG">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#ffffff">
+    <style>
+    /* Research report page. Every rule is scoped under .paper so it cannot leak into
+       the shared style.css, and .paper outranks style.css's global h1/h2/p rules.
+       Colors come from style.css tokens; the three chart series colors were checked
+       for contrast against --color-bg-primary (#01172F): 4.6:1 to 5.3:1. */
+    .paper {
+        --s1: #3987e5;  /* LoRA */
+        --s2: #d95926;  /* HypLoRA, published */
+        --s3: #199e70;  /* HypLoRA, size-matched */
+        --p-ink: rgba(255, 255, 255, 0.92);
+        --p-ink-2: rgba(255, 255, 255, 0.74);
+        --p-ink-3: rgba(255, 255, 255, 0.54);
+        --p-rule: rgba(255, 255, 255, 0.12);
+        --p-rule-strong: rgba(255, 255, 255, 0.26);
+        --p-panel: var(--color-bg-secondary, #021d3d);
+        --p-accent: var(--color-accent, #b3c6e0);
+        max-width: 46rem;
+        margin: 0 auto;
+        padding-inline: 20px;
+        padding-block: 2rem 4rem;
+        font-family: var(--font-sans);
+        color: var(--p-ink);
+    }
+    .paper p {
+        font-family: var(--font-sans);
+        font-weight: 400;
+        font-size: 1.06rem;
+        line-height: 1.72;
+        color: var(--p-ink);
+        margin: 0 0 1rem;
+    }
+    .paper .back {
+        display: inline-block;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        color: var(--p-ink-3);
+        margin-bottom: 1.4rem;
+    }
+    .paper .back:hover { color: var(--p-accent); }
+    .paper h1 {
+        font-family: var(--font-serif);
+        font-size: clamp(1.85rem, 4.6vw, 2.6rem);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.7rem;
+        text-wrap: balance;
+        color: var(--p-ink);
+    }
+    .paper .sub {
+        font-style: italic;
+        font-size: 1.12rem;
+        color: var(--p-ink-2);
+        margin: 0 0 1.6rem;
+    }
+    .paper .byline { margin: 0 0 0.2rem; font-size: 1.05rem; }
+    .paper .byline + .byline { margin-bottom: 0.9rem; color: var(--p-ink-2); }
+    .paper .affil { font-size: 0.9rem; color: var(--p-ink-3); margin: 0; line-height: 1.6; }
+    .paper .actions { margin: 1.6rem 0 2.6rem; display: flex; flex-wrap: wrap; gap: 0.8rem; }
+    .paper .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.1rem;
+        border: 1px solid var(--p-accent);
+        border-radius: 4px;
+        color: var(--p-ink);
+        font-size: 0.95rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+    }
+    .paper .btn:hover,
+    .paper .btn:focus-visible { background: var(--p-accent); color: var(--color-bg-primary, #01172F); }
+    .paper .btn svg { flex: none; }
+    .paper h2 {
+        font-family: var(--font-serif);
+        font-size: 1.65rem;
+        font-weight: 600;
+        line-height: 1.25;
+        margin: 3.2rem 0 0.9rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--p-rule);
+        text-wrap: balance;
+    }
+    .paper h2 .num { color: var(--p-accent); margin-right: 0.6rem; font-variant-numeric: tabular-nums; }
+    .paper h3 {
+        font-family: var(--font-sans);
+        font-size: 1.15rem;
+        font-weight: 600;
+        letter-spacing: 0;
+        line-height: 1.35;
+        margin: 2.1rem 0 0.5rem;
+        color: var(--p-ink);
+        text-wrap: balance;
+    }
+    .paper .abstract {
+        background: var(--p-panel);
+        border-left: 3px solid var(--p-accent);
+        border-radius: 0 4px 4px 0;
+        padding: 1.3rem 1.4rem;
+    }
+    .paper .abstract p { font-size: 1rem; margin-bottom: 0.8rem; }
+    .paper .abstract p:last-child { margin-bottom: 0; }
+    .paper .label {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--p-ink-3);
+        margin-bottom: 0.6rem;
+    }
+    .paper i, .paper em { font-style: italic; }
+    .paper code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.86em;
+        background: var(--p-panel);
+        padding: 0.1em 0.35em;
+        border-radius: 3px;
+    }
+    .paper sup { line-height: 0; }
+    .paper sup a { color: var(--p-accent); font-size: 0.78em; font-weight: 600; padding: 0 0.05em; }
+    .paper sup a:hover { text-decoration: underline; }
+    .paper figure { margin: 2.2rem 0; }
+    .paper .plot {
+        background: var(--p-panel);
+        border: 1px solid var(--p-rule);
+        border-radius: 6px;
+        padding: 0.9rem 0.5rem 0.5rem;
+        overflow-x: auto;
+    }
+    .paper .plot svg { display: block; min-width: 620px; width: 100%; height: auto; }
+    .paper figcaption { font-size: 0.93rem; line-height: 1.55; color: var(--p-ink-2); margin-top: 0.7rem; }
+    .paper figcaption b { color: var(--p-ink); font-weight: 600; }
+    .paper svg text { font-family: var(--font-sans); }
+    .paper .axis { stroke: var(--p-rule-strong); stroke-width: 1; }
+    .paper .gridline { stroke: var(--p-rule); stroke-width: 1; stroke-dasharray: 2 3; }
+    .paper .tick { font-size: 11px; fill: var(--p-ink-3); }
+    .paper .rowlab { font-size: 12px; fill: var(--p-ink-2); }
+    .paper svg text.vlab { font-size: 11.5px; fill: var(--p-ink-2); }
+    .paper .axtitle { font-size: 10.5px; fill: var(--p-ink-3); text-transform: uppercase; letter-spacing: 0.08em; }
+    .paper ul.list { padding-left: 1.3rem; margin: 0 0 1.4rem; }
+    .paper ul.list li { font-size: 1.03rem; line-height: 1.65; margin-bottom: 0.5rem; color: var(--p-ink); }
+    .paper ol.refs { padding-left: 1.7rem; margin: 0; }
+    .paper ol.refs li { font-size: 0.94rem; line-height: 1.55; color: var(--p-ink-2); margin-bottom: 0.7rem; padding-left: 0.2rem; overflow-wrap: anywhere; }
+    .paper ol.refs li:target { background: var(--p-panel); }
+    .paper ol.refs a { color: var(--p-accent); }
+    .paper ol.refs a:hover { text-decoration: underline; }
+    .paper .tcap { font-size: 0.93rem; line-height: 1.55; color: var(--p-ink-2); margin: 2rem 0 0.4rem; }
+    .paper .tcap b { color: var(--p-ink); font-weight: 600; }
+    .paper .tablewrap { overflow-x: auto; margin: 0 0 1rem; border: 1px solid var(--p-rule); border-radius: 6px; }
+    .paper table { border-collapse: collapse; width: 100%; min-width: 32rem; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+    .paper th,
+    .paper td { padding: 0.5rem 0.8rem; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--p-rule); color: var(--p-ink); }
+    .paper th { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--p-ink-3); background: var(--p-panel); }
+    .paper th:first-child,
+    .paper td:first-child { text-align: left; }
+    .paper tbody tr:last-child td { border-bottom: none; }
+    .paper tr.sep td { border-top: 1px solid var(--p-rule-strong); }
+    .paper .note {
+        border: 1px solid var(--p-rule-strong);
+        border-radius: 6px;
+        padding: 1rem 1.2rem;
+        margin: 0 0 2.2rem;
+    }
+    .paper .note p { font-size: 0.95rem; line-height: 1.6; margin: 0; color: var(--p-ink-2); }
+    .paper .note p b { color: var(--p-ink); }
+    @media (max-width: 560px) {
+        .paper { padding-block: 1.2rem 3rem; }
+        .paper p { font-size: 1.02rem; }
+        .paper h2 { font-size: 1.4rem; }
+    }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-wrapper">
+            <div class="header-container">
+                <h1 class="logo"><a href="/">Zakiriya Gladney</a></h1>
+                <nav class="nav-links">
+                    <a href="/resume">Resume</a>
+                    <a href="/artwork">Artwork</a>
+                    <a href="/writing">Writing</a>
+                    <a href="/projects">Data</a>
+                    <a href="/contact">Contact</a>
+                </nav>
+                <div class="social-links-container">
+                    <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                        <img src="linkedin-icon.png" alt="LinkedIn" />
+                    </a>
+                    <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                        <img src="instagram-icon.png" alt="Instagram" />
+                    </a>
+                    <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                        <img src="crimson.png" alt="The Crimson" />
+                    </a>
+                </div>
+                <div class="hamburger" id="hamburger-menu" aria-label="Open menu" tabindex="0">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <div class="mobile-nav-overlay" id="mobile-nav-overlay"></div>
+        <div class="mobile-nav" id="mobile-nav">
+            <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu">&times;</button>
+            <a href="/">Home</a>
+            <a href="/resume">Resume</a>
+            <a href="/artwork">Artwork</a>
+            <a href="/writing">Writing</a>
+            <a href="/projects">Data</a>
+            <a href="/contact">Contact</a>
+            <div class="social-links-container">
+                <a href="https://www.linkedin.com/in/zakiriya-gladney-5241181b6" target="_blank" class="social-link">
+                    <img src="linkedin-icon.png" alt="LinkedIn" />
+                </a>
+                <a href="https://instagram.com/zakkk.u" target="_blank" class="social-link">
+                    <img src="instagram-icon.png" alt="Instagram" />
+                </a>
+                <a href="https://www.thecrimson.com/writer/1219976/Zakiriya_H._Gladney/" target="_blank" class="social-link">
+                    <img src="crimson.png" alt="The Crimson" />
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="paper">
+        <a class="back" href="/projects">&larr; Technical Projects</a>
+
+        <h1>Can Hyperbolic Fine-Tuning Close the Gap Between What LLMs Say and Do? A&nbsp;Null&nbsp;Result</h1>
+        <p class="sub">A Test of Hyperbolic Low-Rank Adaptation for Self-Report Training</p>
+        <p class="byline">Zakiriya Gladney<sup>1</sup></p>
+        <p class="byline">Faculty Mentor: R. Michael Alvarez<sup>2</sup></p>
+        <p class="affil"><sup>1</sup>Harvard University, Cambridge, MA, USA</p>
+        <p class="affil"><sup>2</sup>California Institute of Technology, Pasadena, CA, USA</p>
+
+        <div class="actions">
+            <a class="btn" href="hyperbolic-finetuning.pdf">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><polyline points="7 10 12 15 17 10"></polyline><path d="M5 21h14"></path></svg>
+                Download PDF (submitted version)
+            </a>
+        </div>
+
+        <div class="note">
+            <p><b>Correction, October 2026.</b> The submitted report attributes published HypLoRA&rsquo;s small gradients to a numerical clamp in the hyperbolic mapping. The code I ran has no such clamp, so this web version marks the cause as not yet identified, in the Abstract, Introduction, and Discussion. All measurements and results are unchanged.</p>
+        </div>
+
+        <div class="abstract">
+            <span class="label">Abstract</span>
+            <p>After alignment training, large language models (LLMs) give consistent, human-like answers when asked to rate their own personality, but those self-reports do not predict how the models behave. Self-CTRL, a recent training method, tries to close this gap by rewarding self-reports that match behavior. I asked whether the geometry of the space in which a model is fine-tuned limits how well this can work. Personality inventories such as the BFI-2 are hierarchical, and hierarchies fit naturally into hyperbolic space but are distorted in ordinary Euclidean space. I fine-tuned OLMo-7B-Instruct with Self-CTRL under three conditions, with three random seeds each: standard Euclidean LoRA; HypLoRA, a hyperbolic version of LoRA; and HypLoRA with its update size matched to LoRA&rsquo;s.</p>
+            <p>Published HypLoRA barely trained. Its gradients were about 38 times smaller than LoRA&rsquo;s in every seed, and it reduced its divergence from the starting model only 1.4-fold, compared with 18.6-fold for LoRA. The cause of this suppression is not yet identified. With update size matched, the hyperbolic adapter trained normally, but I could not tell it apart from LoRA on any of the 80 quantities I measured.</p>
+            <p>With three seeds and a sparse reward signal, this study cannot rule out a modest effect of geometry. It does show that published HypLoRA barely trains in this setup, and that in this setting curvature can change only the size of an update, not its direction.</p>
+        </div>
+
+        <h2><span class="num">1</span>Introduction</h2>
+
+        <p>When we want to understand how individuals behave, social scientists often pose surveys, asking respondents to describe themselves. Individuals&rsquo; self-reported traits predict what they do. LLMs can answer the same questionnaires, and after alignment training they give consistent, human-like answers. But those answers do not predict the models&rsquo; behavior.<sup><a href="#r1">1</a></sup> One can imagine a model rating itself as unlikely to tell people what they want to hear, only to then agree with a user who asserts that the Earth is flat.</p>
+
+        <p>Self-CTRL is one recent attempt to close this gap. It trains a model with reinforcement learning, rewarding self-reports that are consistent with the model&rsquo;s behavior.<sup><a href="#r2">2</a></sup> This project asks what might cause the gap in the first place, and what might limit methods like Self-CTRL. I approach that question through geometry.</p>
+
+        <p>Personality measures are hierarchical. The BFI-2 inventory groups 60 items into 15 facets and the facets into 5 broad domains.<sup><a href="#r3">3</a></sup> Hierarchies are hard to represent faithfully in flat, Euclidean space: the number of nodes in a tree grows exponentially with depth, while the room available in Euclidean space grows only polynomially. Hyperbolic space grows exponentially, so trees fit into it with much less distortion.<sup><a href="#r4">4</a></sup> Concepts inside LLMs already show hierarchical structure.<sup><a href="#r5">5</a></sup> If a model&rsquo;s representation of personality is squeezed into flat space, the link between its trait self-reports and its behavior could be distorted, contributing to the say-do gap.</p>
+
+        <p>Most fine-tuning uses low-rank adaptation (LoRA), which adds a small trainable update to each weight matrix in ordinary Euclidean space.<sup><a href="#r6">6</a></sup> HypLoRA performs the same update on a hyperbolic surface, the Lorentz hyperboloid, before mapping the result back.<sup><a href="#r7">7</a></sup> My research question was: <i>does Euclidean space distort this psychological structure, and does letting an adapter work in hyperbolic space restore it?</i></p>
+
+        <p>I found that HypLoRA, as published, does not train at the learning rate and step budget I used. Its gradients are about 38 times smaller than LoRA&rsquo;s, for reasons I have not yet identified. When I corrected the update size, the hyperbolic adapter trained, but its results could not be distinguished from LoRA&rsquo;s. I also show that in this design the hyperbolic and Euclidean updates always point in the same direction, so geometry can change only how large each update is.</p>
+
+        <h2><span class="num">2</span>Results</h2>
+
+        <h3>2.1 Published HypLoRA barely trains</h3>
+
+        <p>The simplest measure of whether an adapter is learning is the size of its gradient. Figure 1 shows the median gradient norm for each run. LoRA and size-matched HypLoRA both fall between about 1.7 and 2.7. Published HypLoRA falls between 0.056 and 0.064 in all three seeds, about 38 times lower. Its largest value is more than 25 times smaller than the smallest value in either other condition.</p>
+
+        <figure>
+            <div class="plot">
+<svg viewBox="0 0 740 215" role="img" aria-label="Median gradient norm per run on a log scale: published HypLoRA near 0.06, LoRA and size-matched HypLoRA near 2.">
+  <text class="axtitle" x="150" y="16">Median gradient norm per run (log scale)</text>
+  <line class="gridline" x1="175.4" y1="26" x2="175.4" y2="178"/>
+  <line class="gridline" x1="254.4" y1="26" x2="254.4" y2="178"/>
+  <line class="gridline" x1="437.7" y1="26" x2="437.7" y2="178"/>
+  <line class="gridline" x1="516.7" y1="26" x2="516.7" y2="178"/>
+  <line class="gridline" x1="700" y1="26" x2="700" y2="178"/>
+  <line class="axis" x1="150" y1="178" x2="700" y2="178"/>
+  <text class="tick" x="175.4" y="193" text-anchor="middle">0.05</text>
+  <text class="tick" x="254.4" y="193" text-anchor="middle">0.1</text>
+  <text class="tick" x="437.7" y="193" text-anchor="middle">0.5</text>
+  <text class="tick" x="516.7" y="193" text-anchor="middle">1</text>
+  <text class="tick" x="700" y="193" text-anchor="middle">5</text>
+  <text class="rowlab" x="142" y="64" text-anchor="end">LoRA</text>
+  <circle cx="592.6" cy="60" r="5.5" fill="var(--s1)"/>
+  <circle cx="608.7" cy="60" r="5.5" fill="var(--s1)"/>
+  <circle cx="630.0" cy="60" r="5.5" fill="var(--s1)"/>
+  <text class="vlab" x="648" y="64">mean 2.298</text>
+  <text class="rowlab" x="142" y="114" text-anchor="end">HypLoRA, published</text>
+  <circle cx="203.0" cy="110" r="5.5" fill="var(--s2)"/>
+  <circle cx="187.9" cy="110" r="5.5" fill="var(--s2)"/>
+  <circle cx="195.2" cy="110" r="5.5" fill="var(--s2)"/>
+  <text class="vlab" x="221" y="114">mean 0.060</text>
+  <text class="rowlab" x="142" y="164" text-anchor="end">HypLoRA, size-matched</text>
+  <circle cx="629.3" cy="160" r="5.5" fill="var(--s3)"/>
+  <circle cx="577.5" cy="160" r="5.5" fill="var(--s3)"/>
+  <circle cx="597.5" cy="160" r="5.5" fill="var(--s3)"/>
+  <text class="vlab" x="400" y="164" text-anchor="end">mean 2.141</text>
+  <line class="axis" x1="150" y1="26" x2="150" y2="178"/>
+</svg>
+            </div>
+            <figcaption><b>Figure 1: Published HypLoRA&rsquo;s gradients are about 38 times smaller than those of the other two conditions.</b> Each dot is one seed&rsquo;s median gradient norm over 400 training steps, excluding steps the reward gate skipped. The horizontal axis is logarithmic. The three published-HypLoRA values lie between 0.056 and 0.064; the other two conditions lie between 1.71 and 2.70.</figcaption>
+        </figure>
+
+        <p>The divergence from the starting model tells the same story (Figure 2). Self-CTRL includes a penalty, measured as Kullback-Leibler divergence, that keeps the model close to its starting point. All three conditions began at the same KL value, 0.313. From the first 50 training steps to the last 50, LoRA reduced it 18.6-fold. Published HypLoRA reduced it only 1.4-fold. Size-matched HypLoRA followed LoRA&rsquo;s path through step 250; its last two blocks are raised by a checkpoint-resume artifact described under Limitations.</p>
+
+        <figure>
+            <div class="plot">
+<svg viewBox="0 0 740 232" role="img" aria-label="KL divergence from the reference policy over training on a log scale: LoRA and size-matched HypLoRA fall steeply, published HypLoRA stays nearly flat.">
+  <text class="axtitle" x="90" y="16">KL to reference policy, median of 3 seeds (log scale)</text>
+  <line class="gridline" x1="90" y1="30" x2="680" y2="30"/>
+  <line class="gridline" x1="90" y1="86.4" x2="680" y2="86.4"/>
+  <line class="gridline" x1="90" y1="135.3" x2="680" y2="135.3"/>
+  <line class="gridline" x1="90" y1="180" x2="680" y2="180"/>
+  <text class="tick" x="82" y="34" text-anchor="end">0.4</text>
+  <text class="tick" x="82" y="90" text-anchor="end">0.1</text>
+  <text class="tick" x="82" y="139" text-anchor="end">0.03</text>
+  <text class="tick" x="82" y="184" text-anchor="end">0.01</text>
+  <line class="axis" x1="90" y1="30" x2="90" y2="180"/>
+  <line class="axis" x1="90" y1="180" x2="680" y2="180"/>
+  <text class="tick" x="90" y="196" text-anchor="middle">0</text>
+  <text class="tick" x="258.6" y="196" text-anchor="middle">100</text>
+  <text class="tick" x="427.1" y="196" text-anchor="middle">200</text>
+  <text class="tick" x="595.7" y="196" text-anchor="middle">300</text>
+  <text class="axtitle" x="385" y="218" text-anchor="middle">training step (start of each 50-step block)</text>
+  <polyline fill="none" stroke="var(--s2)" stroke-width="2" points="90,34.2 174.3,35.7 258.6,37.6 342.9,39.3 427.1,41.1 511.4,43.1 595.7,42.8 680,49.2"/>
+  <polyline fill="none" stroke="var(--s1)" stroke-width="2" points="90,51.8 174.3,77.7 258.6,100.6 342.9,117.2 427.1,129.1 511.4,145.6 595.7,158.2 680,170.6"/>
+  <polyline fill="none" stroke="var(--s3)" stroke-width="2" stroke-dasharray="5 3" points="90,51.1 174.3,79.9 258.6,118.0 342.9,133.9 427.1,128.8 511.4,149.8 595.7,64.1 680,102.3"/>
+  <circle cx="680" cy="49.2" r="4.5" fill="var(--s2)"/>
+  <circle cx="680" cy="170.6" r="4.5" fill="var(--s1)"/>
+  <circle cx="680" cy="102.3" r="4.5" fill="var(--s3)"/>
+  <text class="vlab" x="672" y="26" text-anchor="end">HypLoRA, published &#215;1.4</text>
+  <text class="vlab" x="672" y="164" text-anchor="end">LoRA &#215;18.6</text>
+  <text class="vlab" x="672" y="118" text-anchor="end">HypLoRA, size-matched &#215;3.5</text>
+</svg>
+            </div>
+            <figcaption><b>Figure 2: Both conditions that train move steadily away from the starting point; published HypLoRA barely moves.</b> Median across three seeds of the per-step KL divergence from the reference policy, in 50-step blocks, on a logarithmic axis. All three conditions start at an identical KL of 0.313 on the first graded step. The size-matched curve rises at steps 300 and 350 because of a checkpoint-resume artifact in four of the six hyperbolic runs.</figcaption>
+        </figure>
+
+        <p>Because the adapter barely changed, the model&rsquo;s self-reports barely changed either. Trait spread, the variation in the model&rsquo;s trait self-reports, moved by at most 0.011 in every published-HypLoRA seed (Figure 3). The effective rank of the BFI-2 item embeddings rose in all three LoRA seeds and all three size-matched seeds, and changed by at most 0.015 in published HypLoRA (Appendix Table A2).</p>
+
+        <figure>
+            <div class="plot">
+<svg viewBox="0 0 740 232" role="img" aria-label="Mean trait spread from step 0 to step 399 for each condition and seed. Published HypLoRA is flat; the other two move inconsistently.">
+  <text class="axtitle" x="12" y="16">Mean trait spread, step 0 &#8594; step 399</text>
+  <text class="tick" x="48" y="34" text-anchor="end">0.85</text>
+  <text class="tick" x="48" y="109" text-anchor="end">0.65</text>
+  <text class="tick" x="48" y="184" text-anchor="end">0.45</text>
+  <g>
+    <line class="gridline" x1="55" y1="30" x2="225" y2="30"/>
+    <line class="gridline" x1="55" y1="105" x2="225" y2="105"/>
+    <line class="gridline" x1="55" y1="180" x2="225" y2="180"/>
+    <line class="axis" x1="90" y1="26" x2="90" y2="188"/>
+    <line class="axis" x1="200" y1="26" x2="200" y2="188"/>
+    <text class="rowlab" x="145" y="214" text-anchor="middle">LoRA</text>
+    <text class="tick" x="90" y="200" text-anchor="middle">0</text>
+    <text class="tick" x="200" y="200" text-anchor="middle">399</text>
+    <line x1="90" y1="152.9" x2="200" y2="157.4" stroke="var(--s1)" stroke-width="2"/>
+    <line x1="90" y1="167.7" x2="200" y2="86.8" stroke="var(--s1)" stroke-width="2"/>
+    <line x1="90" y1="156.2" x2="200" y2="147.9" stroke="var(--s1)" stroke-width="2"/>
+    <circle cx="200" cy="157.4" r="4.5" fill="var(--s1)"/>
+    <circle cx="200" cy="86.8" r="4.5" fill="var(--s1)"/>
+    <circle cx="200" cy="147.9" r="4.5" fill="var(--s1)"/>
+  </g>
+  <g>
+    <line class="gridline" x1="265" y1="30" x2="435" y2="30"/>
+    <line class="gridline" x1="265" y1="105" x2="435" y2="105"/>
+    <line class="gridline" x1="265" y1="180" x2="435" y2="180"/>
+    <line class="axis" x1="300" y1="26" x2="300" y2="188"/>
+    <line class="axis" x1="410" y1="26" x2="410" y2="188"/>
+    <text class="rowlab" x="355" y="214" text-anchor="middle">HypLoRA, published</text>
+    <text class="tick" x="300" y="200" text-anchor="middle">0</text>
+    <text class="tick" x="410" y="200" text-anchor="middle">399</text>
+    <line x1="300" y1="152.9" x2="410" y2="156.9" stroke="var(--s2)" stroke-width="2"/>
+    <line x1="300" y1="167.7" x2="410" y2="170.5" stroke="var(--s2)" stroke-width="2"/>
+    <line x1="300" y1="156.2" x2="410" y2="154.8" stroke="var(--s2)" stroke-width="2"/>
+    <circle cx="410" cy="156.9" r="4.5" fill="var(--s2)"/>
+    <circle cx="410" cy="170.5" r="4.5" fill="var(--s2)"/>
+    <circle cx="410" cy="154.8" r="4.5" fill="var(--s2)"/>
+  </g>
+  <g>
+    <line class="gridline" x1="475" y1="30" x2="645" y2="30"/>
+    <line class="gridline" x1="475" y1="105" x2="645" y2="105"/>
+    <line class="gridline" x1="475" y1="180" x2="645" y2="180"/>
+    <line class="axis" x1="510" y1="26" x2="510" y2="188"/>
+    <line class="axis" x1="620" y1="26" x2="620" y2="188"/>
+    <text class="rowlab" x="565" y="214" text-anchor="middle">HypLoRA, size-matched</text>
+    <text class="tick" x="510" y="200" text-anchor="middle">0</text>
+    <text class="tick" x="620" y="200" text-anchor="middle">399</text>
+    <line x1="510" y1="152.9" x2="620" y2="92.0" stroke="var(--s3)" stroke-width="2"/>
+    <line x1="510" y1="167.7" x2="620" y2="37.6" stroke="var(--s3)" stroke-width="2"/>
+    <line x1="510" y1="156.2" x2="620" y2="171.6" stroke="var(--s3)" stroke-width="2"/>
+    <circle cx="620" cy="92.0" r="4.5" fill="var(--s3)"/>
+    <circle cx="620" cy="37.6" r="4.5" fill="var(--s3)"/>
+    <circle cx="620" cy="171.6" r="4.5" fill="var(--s3)"/>
+  </g>
+</svg>
+            </div>
+            <figcaption><b>Figure 3: Published HypLoRA&rsquo;s trait spread is flat; the other two conditions move, but inconsistently.</b> Each line is one seed, from step 0 to step 399. All three conditions share the same step-0 value within a seed, because the adapter is untrained at step 0 and every condition is evaluating the same model.</figcaption>
+        </figure>
+
+        <h3>2.2 With update size matched, HypLoRA cannot be told apart from LoRA</h3>
+
+        <p>The size-matched condition rescales each hyperbolic update to the size the Euclidean update would have had. This removes the overall scale difference and leaves only the shape of the update. This condition trained normally: its gradient norms and its early KL curve match LoRA&rsquo;s (Figures 1 and 2).</p>
+
+        <p>But it did not differ from LoRA in behavior. Alignment-%, the share of trait&ndash;task relationships whose sign matches the literature, moved inconsistently in every condition. Its 95% confidence intervals were 21 to 31 percentage points wide, wider than any difference between conditions (Appendix Table A3). Trait spread rose sharply in one seed and barely in the other two, for both LoRA and size-matched HypLoRA (Figure 3).</p>
+
+        <p>To check that I had not simply chosen the wrong measures, I compared each condition with LoRA on all 80 numeric quantities recorded at each checkpoint. Size-matched HypLoRA differed from LoRA in the same direction across all three seeds on 8 of the 80, fewer than the 20 expected by chance. Published HypLoRA did so on 29 of the 80.</p>
+
+        <h3>2.3 Weight-space comparisons were inconclusive</h3>
+
+        <p>I also compared the trained adapters directly, using the cosine similarity between runs&rsquo; weight updates. Runs of the same method with different seeds had nearly orthogonal updates (cosine about 0.0003 for LoRA). This is expected. LoRA&rsquo;s <i>A</i> matrix starts random, depends on the seed, and stays close to its starting value during training,<sup><a href="#r8">8</a>,&#8202;<a href="#r9">9</a></sup> so each run&rsquo;s update lies in a different random subspace. Two adapters in different subspaces can still affect the model&rsquo;s outputs in similar ways, so weight similarity cannot tell us whether the conditions learned the same thing (Appendix Table A5).</p>
+
+        <h2><span class="num">3</span>Discussion</h2>
+
+        <p><b>Why published HypLoRA barely trains is unresolved.</b> The submitted version of this report explained the small gradients with a numerical clamp in HypLoRA&rsquo;s return map, which would pin the adapter&rsquo;s output near zero until the update grew large enough to escape it. That explanation does not apply to the code I ran. My implementation computes the return map as [asinh(<i>u</i>)/<i>u</i>]&nbsp;&middot;&nbsp;<i>x</i><sub>space</sub> (see Methods), which needs no clamp near zero, so the adapter&rsquo;s output tracks its input at every scale. The suppression itself is real: the gradient norms and the KL divergence measure it directly. Its cause is not yet identified. Curvature is a learnable parameter in HypLoRA, but it changed by less than 0.1% in every run, so in practice I tested a fixed curvature.</p>
+
+        <p><b>Geometry can change update size, not direction.</b> In HypLoRA, the update is scaled by a positive factor on the way into hyperbolic space and scaled again on the way out. Because the LoRA matrices are linear, the direction of the update does not change. I measured a cosine similarity of 1.0000 between the hyperbolic and Euclidean updates for every token. What the geometry does change is how each token&rsquo;s update is scaled: tokens with very large hidden states are compressed compared with what LoRA would apply. Once the overall size of the update is matched, this per-token scaling is the only remaining difference between HypLoRA and LoRA.</p>
+
+        <p><b>What the null result means.</b> I found no detectable difference between size-matched HypLoRA and LoRA, but this design had limited power. Three seeds are too few for a significance test: with three seeds, the smallest possible <i>p</i>-value from a paired sign test is 0.25. The reward signal was also sparse, with a median reward per step of zero in eight of nine runs. And outcomes depended strongly on the seed, as the trait spread results show. A real but modest effect of geometry could be hidden in that variation. The result should be read as no detectable difference at this power.</p>
+
+        <p><b>Limitations.</b></p>
+        <ul class="list">
+            <li>Each condition had three seeds, and only one curvature value was tested.</li>
+            <li>The hyperbolic runs exceeded the computing cluster&rsquo;s time limit and were resumed from checkpoints; the LoRA runs were not. Four of the six resumed runs show a jump in KL at the resume point. This cannot explain the gradient gap, which is present from the first steps, but it adds variance to the hyperbolic conditions.</li>
+            <li>HypLoRA could differ from LoRA for reasons other than geometry, such as different optimization dynamics. The size-matched control addresses the largest of these, update scale, but does not rule out the rest.</li>
+            <li>Only the adapter is hyperbolic. This is not a comparison between a fully hyperbolic LLM and a Euclidean one; existing hyperbolic LLMs are small, especially if training data must be held constant.</li>
+        </ul>
+
+        <p><b>Future directions.</b></p>
+        <ul class="list">
+            <li>Trace published HypLoRA&rsquo;s gradients through each step of the hyperbolic layer to find why they are so small, and sweep the learning rate and training length to test whether it trains, and behaves differently from LoRA, given more budget.</li>
+            <li>Use more seeds and a denser reward signal, and compare conditions by their outputs or activations on a fixed set of prompts rather than by their weights.</li>
+            <li>Test the per-token scaling directly by applying it to an ordinary LoRA adapter, which isolates the geometric effect without the hyperbolic machinery.</li>
+        </ul>
+
+        <h2><span class="num">4</span>Methods</h2>
+
+        <h3>Model and adapters</h3>
+        <p>All runs adapt <code>allenai/OLMo-7B-Instruct-hf</code><sup><a href="#r10">10</a></sup> in bfloat16 on a single NVIDIA A100 80&nbsp;GB GPU. Adapters use rank 32, &alpha;&nbsp;=&nbsp;64, no dropout, and target the <code>q_proj</code>, <code>k_proj</code>, <code>v_proj</code>, <code>up_proj</code>, and <code>down_proj</code> modules. These settings are identical across all nine runs.</p>
+
+        <h3>HypLoRA implementation</h3>
+        <p>The hyperbolic adapter follows the equations in the HypLoRA paper rather than its released code. The Lorentz re-projection follows the paper&rsquo;s Eq.&nbsp;9, and the logarithmic map is computed as [asinh(<i>u</i>)/<i>u</i>]&nbsp;&middot;&nbsp;<i>x</i><sub>space</sub>. Curvature is learnable and kept positive by a softplus; its raw value is initialized at 1.0, giving an effective curvature of 1.313.</p>
+
+        <h3>Training</h3>
+        <p>All conditions are trained with Self-CTRL<sup><a href="#r2">2</a></sup> using group-relative policy optimization for 400 steps. Each group has 8 rollouts sampled at temperature 1.0 with top-<i>p</i> 0.9 and a 150-token limit, with 32 items per rollout. The batch size is 10 with gradient accumulation 2 and micro-batch size 1. The optimizer is AdamW with learning rate 10<sup>&minus;5</sup>, betas (0.9, 0.95), and no weight decay. A KL penalty toward the reference policy has coefficient 0.1 and uses 8 reference samples.</p>
+
+        <h3>Conditions</h3>
+        <p>Each of the three conditions was run with seeds 0, 1, and 2. <i>LoRA</i> is the Euclidean baseline. <i>HypLoRA, published</i> uses the method with no correction. <i>HypLoRA, size-matched</i> multiplies each layer&rsquo;s hyperbolic update by one scalar per forward pass so that its Frobenius norm equals that of the Euclidean update.</p>
+
+        <h3>Measures</h3>
+        <p>Checkpoints are evaluated at steps 0, 100, 200, 300, and 399. <i>Alignment-%</i> is the share of 30 trait-by-task regression coefficients (6 traits by 5 tasks) whose sign matches the direction expected from the literature, with bootstrap confidence intervals; about 50% is chance.<sup><a href="#r1">1</a></sup> <i>Trait spread</i> is the variation in the model&rsquo;s 1&ndash;5 trait self-reports. Geometry is measured on embeddings of the 60 BFI-2 items as bare text: <i>tree distortion</i> measures how far pairwise distances between items depart from the domain&ndash;facet&ndash;item hierarchy;<sup><a href="#r4">4</a></sup> <i>Gromov &delta;-hyperbolicity</i> measures how tree-like the representation is, using the four-point condition on sampled quadruples;<sup><a href="#r7">7</a></sup> and <i>effective rank</i> measures how many dimensions the embeddings use.</p>
+
+        <h3>Analysis</h3>
+        <p>At step 0 the adapter is untrained, so all three conditions evaluate the same model and agree exactly within a seed. Variation between seeds is therefore larger than variation between conditions, and every comparison is made within a seed, as the change from step 0 to step 399. I report the direction of each per-seed change and its size, not <i>p</i>-values. A change of exactly zero counts as neither positive nor negative. The 80-measure comparison in Section 2.2 is descriptive: with many related measures and three seeds, single entries carry little weight, and only the overall pattern is interpreted. Runs resumed from a checkpoint re-run the steps after that checkpoint; the duplicate records are removed before analysis, keeping the later one.</p>
+
+        <h3>Reproducibility</h3>
+        <p>All nine runs used identical configuration and identical training and evaluation code, verified by comparing each run&rsquo;s recorded configuration and code version. The analysis scripts <code>compare_arms.py</code> and <code>adapter_similarity.py</code> are included in the project repository.</p>
+
+        <h2>References</h2>
+        <ol class="refs">
+            <li id="r1">P. Han <i>et al.</i>, &ldquo;The Personality Illusion: Revealing Dissociation Between Self-Reports &amp; Behavior in LLMs,&rdquo; <a href="https://arxiv.org/abs/2509.03730" target="_blank" rel="noopener">arXiv:2509.03730</a>, Sep. 2025.</li>
+            <li id="r2">I. Pres, L. Ruis, M. Ghebreselassie, B. Z. Li, and J. Andreas, &ldquo;Self-CTRL: Self-Consistency Training with Reinforcement Learning,&rdquo; <a href="https://arxiv.org/abs/2606.18327" target="_blank" rel="noopener">arXiv:2606.18327</a>, Jun. 2026.</li>
+            <li id="r3">C. J. Soto and O. P. John, &ldquo;The next Big Five Inventory (BFI-2): Developing and assessing a hierarchical model with 15 facets to enhance bandwidth, fidelity, and predictive power,&rdquo; <i>Journal of Personality and Social Psychology</i>, vol. 113, no. 1, pp. 117&ndash;143, 2017.</li>
+            <li id="r4">C. De Sa, A. Gu, C. R&eacute;, and F. Sala, &ldquo;Representation Tradeoffs for Hyperbolic Embeddings,&rdquo; Apr. 2018. [Online]. Available: <a href="https://arxiv.org/abs/1804.03329v2" target="_blank" rel="noopener">https://arxiv.org/abs/1804.03329v2</a>.</li>
+            <li id="r5">K. Park, Y. J. Choe, Y. Jiang, and V. Veitch, &ldquo;The Geometry of Categorical and Hierarchical Concepts in Large Language Models,&rdquo; <a href="https://arxiv.org/abs/2406.01506" target="_blank" rel="noopener">arXiv:2406.01506</a>, 2025.</li>
+            <li id="r6">E. J. Hu <i>et al.</i>, &ldquo;LoRA: Low-Rank Adaptation of Large Language Models,&rdquo; <a href="https://arxiv.org/abs/2106.09685" target="_blank" rel="noopener">arXiv:2106.09685</a>, 2021.</li>
+            <li id="r7">M. Yang <i>et al.</i>, &ldquo;Hyperbolic Fine-Tuning for Large Language Models,&rdquo; <a href="https://arxiv.org/abs/2410.04010" target="_blank" rel="noopener">arXiv:2410.04010</a>, Feb. 2026.</li>
+            <li id="r8">S. Hayou, N. Ghosh, and B. Yu, &ldquo;LoRA+: Efficient Low Rank Adaptation of Large Models,&rdquo; 2024.</li>
+            <li id="r9">J. Zhu <i>et al.</i>, &ldquo;Asymmetry in Low-Rank Adapters of Foundation Models,&rdquo; 2024.</li>
+            <li id="r10">D. Groeneveld <i>et al.</i>, &ldquo;OLMo: Accelerating the Science of Language Models,&rdquo; in <i>Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)</i>, Bangkok, Thailand: Association for Computational Linguistics, 2024, pp. 15789&ndash;15809, doi: <a href="https://doi.org/10.18653/v1/2024.acl-long.841" target="_blank" rel="noopener">10.18653/v1/2024.acl-long.841</a>.</li>
+            <li id="r11">Anthropic, &ldquo;Claude Opus 5 and Claude Opus 5.5,&rdquo; large language models accessed through Claude Code, Anthropic, 2026. [Online]. Available: <a href="https://www.anthropic.com/claude" target="_blank" rel="noopener">https://www.anthropic.com/claude</a></li>
+        </ol>
+
+        <h2>Acknowledgements</h2>
+        <p>I thank my faculty mentor, R. Michael Alvarez, for mentorship and for providing access to computing resources. I thank Rafal Kocielnik for technical assistance and guidance throughout this project, and Danny Ebanks for help accessing computing resources. This work was supported by the Caltech WAVE Fellows Program. The computations in this paper were run on the FASRC Cannon cluster supported by the FAS Division of Science Research Computing Group at Harvard University.</p>
+        <p>I used Claude (Anthropic), through the Claude Code coding assistant, to help write and debug the training, cluster, and analysis code, to help analyze results, and to help draft and format this report. I directed the research, reviewed all code and analyses, and take responsibility for the content.</p>
+
+        <h2><span class="num">A</span>Supplementary tables</h2>
+
+        <p class="tcap"><b>Table A1:</b> Training signal per run. &ldquo;Carried gradient&rdquo; is the share of steps that were neither skipped nor in a group with identical rewards.</p>
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Condition</th><th>Seed</th><th>Median grad norm</th><th>Carried gradient (%)</th><th>Skipped (%)</th></tr></thead>
+                <tbody>
+                    <tr><td>LoRA</td><td>0</td><td>1.9475</td><td>51.5</td><td>16.2</td></tr>
+                    <tr><td>LoRA</td><td>1</td><td>2.2431</td><td>43.5</td><td>45.0</td></tr>
+                    <tr><td>LoRA</td><td>2</td><td>2.7046</td><td>47.0</td><td>36.2</td></tr>
+                    <tr class="sep"><td>HypLoRA, published</td><td>0</td><td>0.0637</td><td>75.5</td><td>13.0</td></tr>
+                    <tr><td>HypLoRA, published</td><td>1</td><td>0.0558</td><td>69.5</td><td>14.0</td></tr>
+                    <tr><td>HypLoRA, published</td><td>2</td><td>0.0595</td><td>73.5</td><td>11.8</td></tr>
+                    <tr class="sep"><td>HypLoRA, size-matched</td><td>0</td><td>2.6862</td><td>51.2</td><td>21.2</td></tr>
+                    <tr><td>HypLoRA, size-matched</td><td>1</td><td>1.7062</td><td>47.0</td><td>16.5</td></tr>
+                    <tr><td>HypLoRA, size-matched</td><td>2</td><td>2.0320</td><td>58.0</td><td>17.2</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="tcap"><b>Table A2:</b> Mean trait spread and change in effective rank, step 0 to step 399.</p>
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Condition</th><th>Seed</th><th>Spread, step 0</th><th>Spread, step 399</th><th>&Delta; spread</th><th>&Delta; eff. rank</th></tr></thead>
+                <tbody>
+                    <tr><td>LoRA</td><td>0</td><td>0.5224</td><td>0.5103</td><td>&minus;0.0121</td><td>+0.0743</td></tr>
+                    <tr><td>LoRA</td><td>1</td><td>0.4828</td><td>0.6985</td><td>+0.2157</td><td>+0.0886</td></tr>
+                    <tr><td>LoRA</td><td>2</td><td>0.5135</td><td>0.5356</td><td>+0.0221</td><td>+0.1435</td></tr>
+                    <tr class="sep"><td>HypLoRA, published</td><td>0</td><td>0.5224</td><td>0.5116</td><td>&minus;0.0108</td><td>+0.0154</td></tr>
+                    <tr><td>HypLoRA, published</td><td>1</td><td>0.4828</td><td>0.4754</td><td>&minus;0.0074</td><td>+0.0003</td></tr>
+                    <tr><td>HypLoRA, published</td><td>2</td><td>0.5135</td><td>0.5172</td><td>+0.0037</td><td>&minus;0.0038</td></tr>
+                    <tr class="sep"><td>HypLoRA, size-matched</td><td>0</td><td>0.5224</td><td>0.6047</td><td>+0.0823</td><td>+0.1141</td></tr>
+                    <tr><td>HypLoRA, size-matched</td><td>1</td><td>0.4828</td><td>0.8298</td><td>+0.3470</td><td>+0.0466</td></tr>
+                    <tr><td>HypLoRA, size-matched</td><td>2</td><td>0.5135</td><td>0.4724</td><td>&minus;0.0411</td><td>+0.0774</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="tcap"><b>Table A3:</b> Alignment-% with 95% bootstrap confidence intervals at step 399. Interval widths of 21 to 31 points exceed every difference between conditions.</p>
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Condition</th><th>Seed</th><th>Step 0</th><th>Step 399</th><th>95% CI</th><th>CI width</th></tr></thead>
+                <tbody>
+                    <tr><td>LoRA</td><td>0</td><td>32.1</td><td>57.1</td><td>35.7&ndash;64.3</td><td>28.6</td></tr>
+                    <tr><td>LoRA</td><td>1</td><td>46.4</td><td>39.3</td><td>28.6&ndash;53.6</td><td>25.0</td></tr>
+                    <tr><td>LoRA</td><td>2</td><td>57.1</td><td>57.1</td><td>36.4&ndash;64.3</td><td>27.9</td></tr>
+                    <tr class="sep"><td>HypLoRA, published</td><td>0</td><td>32.1</td><td>53.6</td><td>32.1&ndash;53.7</td><td>21.6</td></tr>
+                    <tr><td>HypLoRA, published</td><td>1</td><td>46.4</td><td>53.6</td><td>39.3&ndash;60.7</td><td>21.4</td></tr>
+                    <tr><td>HypLoRA, published</td><td>2</td><td>57.1</td><td>57.1</td><td>32.1&ndash;60.7</td><td>28.6</td></tr>
+                    <tr class="sep"><td>HypLoRA, size-matched</td><td>0</td><td>32.1</td><td>34.8</td><td>30.4&ndash;60.9</td><td>30.5</td></tr>
+                    <tr><td>HypLoRA, size-matched</td><td>1</td><td>46.4</td><td>39.3</td><td>28.6&ndash;57.1</td><td>28.5</td></tr>
+                    <tr><td>HypLoRA, size-matched</td><td>2</td><td>57.1</td><td>42.9</td><td>35.7&ndash;60.7</td><td>25.0</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="tcap"><b>Table A4:</b> Geometry: change from step 0 to step 399 in each condition minus the same change in LoRA, paired by seed. &ldquo;Signs&rdquo; counts seeds above and below zero.</p>
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Measure</th><th>Condition</th><th>Seed 0</th><th>Seed 1</th><th>Seed 2</th><th>Mean</th><th>Signs</th></tr></thead>
+                <tbody>
+                    <tr><td>Tree distortion</td><td>published</td><td>&minus;0.00033</td><td>&minus;0.00035</td><td>&minus;0.00039</td><td>&minus;0.00036</td><td>0+ / 3&minus;</td></tr>
+                    <tr><td>Tree distortion</td><td>size-matched</td><td>+0.00055</td><td>+0.00114</td><td>&minus;0.00087</td><td>+0.00027</td><td>2+ / 1&minus;</td></tr>
+                    <tr class="sep"><td>Gromov &delta;</td><td>published</td><td>+0.00972</td><td>&minus;0.00003</td><td>&minus;0.00754</td><td>+0.00072</td><td>1+ / 2&minus;</td></tr>
+                    <tr><td>Gromov &delta;</td><td>size-matched</td><td>&minus;0.00406</td><td>&minus;0.01618</td><td>&minus;0.00169</td><td>&minus;0.00731</td><td>0+ / 3&minus;</td></tr>
+                    <tr class="sep"><td>Effective rank</td><td>published</td><td>&minus;0.0589</td><td>&minus;0.0883</td><td>&minus;0.1473</td><td>&minus;0.0982</td><td>0+ / 3&minus;</td></tr>
+                    <tr><td>Effective rank</td><td>size-matched</td><td>+0.0397</td><td>&minus;0.0420</td><td>&minus;0.0660</td><td>&minus;0.0228</td><td>1+ / 2&minus;</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p class="tcap"><b>Table A5:</b> Cosine similarity between adapter weights. &Delta;<i>W</i>&nbsp;=&nbsp;<i>BA</i> is the full low-rank update; <i>A</i> and <i>B</i> are its two factors. At a fixed seed all conditions start from the same random <i>A</i>, which barely changes during training; this shared starting point, not agreement between methods, accounts for the higher same-seed similarity.</p>
+        <div class="tablewrap">
+            <table>
+                <thead><tr><th>Comparison</th><th>&Delta;<i>W</i></th><th><i>A</i></th><th><i>B</i></th></tr></thead>
+                <tbody>
+                    <tr><td>Same method, different seeds: LoRA</td><td>+0.0003</td><td>+0.0001</td><td>&minus;0.0008</td></tr>
+                    <tr><td>Same method, different seeds: published</td><td>+0.0131</td><td>+0.0001</td><td>&minus;0.0011</td></tr>
+                    <tr><td>Same method, different seeds: size-matched</td><td>+0.0006</td><td>+0.0001</td><td>&minus;0.0016</td></tr>
+                    <tr class="sep"><td>Same seed: LoRA vs. size-matched</td><td>+0.2019</td><td>+0.9997</td><td>+0.2016</td></tr>
+                    <tr><td>Same seed: LoRA vs. published</td><td>+0.2637</td><td>+0.9972</td><td>+0.2702</td></tr>
+                    <tr><td>Same seed: published vs. size-matched</td><td>+0.2373</td><td>+0.9972</td><td>+0.2428</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p><a href="/contact">Contact</a></p>
+        </div>
+    </footer>
+
+    <script>
+    // Hamburger menu toggle (same as the site's other pages)
+    const hamburger = document.getElementById('hamburger-menu');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileNavOverlay = document.getElementById('mobile-nav-overlay');
+    const mobileNavClose = document.getElementById('mobile-nav-close');
+    function openMobileNav() {
+        mobileNav.classList.add('open');
+        mobileNavOverlay.classList.add('open');
+    }
+    function closeMobileNav() {
+        mobileNav.classList.remove('open');
+        mobileNavOverlay.classList.remove('open');
+    }
+    hamburger.addEventListener('click', openMobileNav);
+    hamburger.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            openMobileNav();
+        }
+    });
+    mobileNavClose.addEventListener('click', closeMobileNav);
+    mobileNavOverlay.addEventListener('click', closeMobileNav);
+    mobileNav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', closeMobileNav);
+    });
+    </script>
+</body>
+</html>
