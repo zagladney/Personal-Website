@@ -21,7 +21,7 @@ function initDoxxologyGallery() {
 
     images.forEach((image, index) => {
         const galleryItem = document.createElement('div');
-        galleryItem.className = 'tunisia-item';
+        galleryItem.className = 'tunisia-item doxxology-item';
         galleryItem.dataset.index = index;
 
         const img = document.createElement('img');

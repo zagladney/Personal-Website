@@ -1593,6 +1593,56 @@ a:hover {
     }
 }
 
+/* DOXXOLOGY page: inverted relative to the other gallery pages (black ground,
+   light title/year) since the series itself is printed light-on-cream. */
+.doxxology-main {
+    background: #000;
+    min-height: 100vh;
+    width: 100vw;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.doxxology-title {
+    font-family: var(--font-serif);
+    font-size: var(--font-size-5xl);
+    font-weight: 600;
+    text-align: center;
+    margin-top: var(--spacing-2xl);
+    margin-bottom: var(--spacing-lg);
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+
+.doxxology-year {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-lg);
+    font-weight: 300;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    margin: calc(var(--spacing-lg) * -1) 0 var(--spacing-xl) 0;
+    letter-spacing: 0.05em;
+}
+
+.doxxology-item,
+.doxxology-item img {
+    background: #000;
+}
+
+.doxxology-main .scroll-indicator {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+    .doxxology-title {
+        font-size: var(--font-size-4xl);
+        margin-top: var(--spacing-xl);
+    }
+}
+
 @media (max-width: 768px) {
     .tunisia-wrapper {
         padding: var(--spacing-2xl) 0;
@@ -2112,6 +2162,16 @@ a:hover {
     color: rgba(255, 255, 255, 0.3);
     text-decoration: underline transparent;
     transform: none;
+}
+
+.project-year {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-lg);
+    font-weight: 300;
+    text-align: center;
+    color: rgba(1, 23, 47, 0.5);
+    margin: calc(var(--spacing-lg) * -1) 0 var(--spacing-xl) 0;
+    letter-spacing: 0.05em;
 }
 
 .crust-main {
